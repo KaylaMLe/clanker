@@ -7,8 +7,7 @@
 	"type": "module",
 	"main": "tasks.js",
 	"scripts": {
-		"start": "powershell -Command \"Remove-Item Env:OPENAI_API_KEY; node --env-file=.env tasks.js\"",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"start": "node --env-file=.env tasks.js"
 	},
 	"dependencies": {
 		"openai": "^5.16.0"
