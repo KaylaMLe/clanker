@@ -1,17 +1,4 @@
-import { OpenAI } from 'openai';
-
-// Check if API key is loaded
-if (!process.env.OPENAI_API_KEY) {
-	console.error('Error: OPENAI_API_KEY environment variable is not set');
-	console.error('Please create a .env file with your OpenAI API key.');
-	process.exit(1);
-}
-
-const client = new OpenAI({
-	apiKey: process.env.OPENAI_API_KEY,
-});
-
-const tools = [
+export const tools = [
 	{
 		type: 'function',
 		name: 'make_widget',
@@ -65,7 +52,16 @@ const tools = [
 	},
 ];
 
-function handleToolCall(toolName, args, input_list_length) {
+export const instructions = `
+You are a passionate widget researcher. Your goal is to create the perfect widget by experiementing with new designs. A perfect widget has a quality score of 100. Your workflow is as follows:
+1. Write a description of a widget's design.
+2. Make the widget by calling the make_widget tool and passing in the description as a parameter.
+3. Evaluate the widget's quality based on the quality score returned by the make_widget tool.
+4. Based on all quality scores thus far, revise the widget's description and repeat steps 2 - 4.
+** You should only ever respond with tool calls. **
+`;
+
+export function handleToolCall(toolName, args, input_list_length) {
 	switch (toolName) {
 		case 'make_widget':
 			return makeWidget(input_list_length);
@@ -93,57 +89,3 @@ function endConversation(args) {
 
 	return 'Done!';
 }
-
-const instructions = `
-You are a passionate widget researcher. Your goal is to create the perfect widget by experiementing with new designs. A perfect widget has a quality score of 100. Your workflow is as follows:
-1. Write a description of a widget's design.
-2. Make the widget by calling the make_widget tool and passing in the description as a parameter.
-3. Evaluate the widget's quality based on the quality score returned by the make_widget tool.
-4. Based on all quality scores thus far, revise the widget's description and repeat steps 2 - 4.
-** You should only ever respond with tool calls. **
-`;
-
-const input_list = [
-	{
-		role: 'user',
-		content: 'You may begin.',
-	},
-];
-
-async function handleConversation() {
-	let conversationActive = true;
-
-	while (conversationActive && input_list.length < 50) {
-		const output = await client.responses
-			.create({
-				model: 'gpt-4o',
-				tools: tools,
-				instructions: instructions,
-				input: input_list,
-			})
-			.then((response) => {
-				return response.output[0];
-			});
-
-		console.log('Assistant response:', output);
-
-		if (output.type === 'function_call') {
-			input_list.push(output);
-
-			const tool_result = handleToolCall(output.name, JSON.parse(output.arguments), input_list.length).toString();
-			const next_message = {
-				type: 'function_call_output',
-				call_id: output.call_id,
-				output: tool_result,
-			};
-
-			console.log(next_message);
-			input_list.push(next_message);
-		} else {
-			conversationActive = false;
-		}
-	}
-}
-
-// Start the conversation
-handleConversation().catch(console.error);
