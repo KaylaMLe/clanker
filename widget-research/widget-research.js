@@ -1,8 +1,14 @@
 import { ConvoHandler } from '../convo-handler.js';
+import * as researcher from './researcher.js';
+import * as critic from './critic.js';
 
-class WidgetResearch {
-	// both convos (main and critic)
-	// main convo has functions and journal access
-	// flip roles of convo history
-	// critic has no journal access
+export class WidgetResearch {
+	constructor() {
+		this.researcher = new ConvoHandler(researcher.instructions, researcher.tools, researcher.handleToolCall);
+		this.critic = new ConvoHandler(critic.instructions);
+	}
+
+	async startResearch() {
+		await this.researcher.sendMessage('You may begin.');
+	}
 }

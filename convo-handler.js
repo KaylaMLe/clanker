@@ -12,7 +12,7 @@ const client = new OpenAI({
 });
 
 export class ConvoHandler {
-	constructor(instructions, tools, toolCallHandler, model = 'gpt-4o') {
+	constructor(instructions, tools = [], toolCallHandler = null, model = 'gpt-4o') {
 		this.instructions = instructions;
 		this.convoHistory = [];
 		this.tools = tools;
@@ -38,8 +38,8 @@ export class ConvoHandler {
 		for (const item of response.output) {
 			this.convoHistory.push(item);
 
-			if (item.type === 'function_call') {
-				//TODO: what if toolCallHandler fails or is null?
+			if (item.type === 'function_call' && this.toolCallHandler) {
+				//TODO: what if toolCallHandler fails?
 				const toolResult = await this.toolCallHandler(item.name, JSON.parse(item.arguments));
 				const toolOutput = {
 					type: 'function_call_output',
@@ -49,7 +49,11 @@ export class ConvoHandler {
 
 				this.convoHistory.push(toolOutput);
 			} else if (item.type !== 'message') {
-				throw new Error(`Unhandled message of type ${item.type}:\n${item}`);
+				throw new Error(
+					`Unhandled message of type ${item.type}${
+						item.type === 'function_call' ? ' (tool call handler is null)' : ''
+					}:\n${item}`
+				);
 			}
 		}
 
