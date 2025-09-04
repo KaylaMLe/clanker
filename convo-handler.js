@@ -35,7 +35,7 @@ export class ConvoHandler {
 				return response.output;
 			});
 
-		for (const item of response.output) {
+		for (const item of response) {
 			this.convoHistory.push(item);
 
 			if (item.type === 'function_call' && this.toolCallHandler) {
@@ -48,7 +48,9 @@ export class ConvoHandler {
 				};
 
 				this.convoHistory.push(toolOutput);
-			} else if (item.type !== 'message') {
+			} else if (item.type === 'message') {
+				console.log(item.content.text);
+			} else {
 				throw new Error(
 					`Unhandled message of type ${item.type}${
 						item.type === 'function_call' ? ' (tool call handler is null)' : ''

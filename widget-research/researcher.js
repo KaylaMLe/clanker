@@ -74,10 +74,10 @@ You are a passionate widget researcher. Your goal is to create the perfect widge
 ** You should only ever respond with tool calls. **
 `;
 
-export function handleToolCall(toolName, args, input_list_length) {
+export function handleToolCall(toolName, args) {
 	switch (toolName) {
 		case 'make_widget':
-			return makeWidget(input_list_length);
+			return makeWidget();
 		case 'end_convo':
 			return endConversation(args);
 		case 'write_journal_entry':
@@ -89,10 +89,10 @@ export function handleToolCall(toolName, args, input_list_length) {
 	}
 }
 
-function makeWidget(input_list_length) {
-	const quality_score = Math.random() * 50 - input_list_length * 10;
+function makeWidget() {
+	const quality_score = Math.random() * 50;
 
-	return quality_score;
+	return quality_score.toString();
 }
 
 function writeJournalEntry(args) {
