@@ -1,2 +1,0 @@
-Tested a design for a sleek metallic sphere with embedded solar panels. The quality score was 31.5, indicating room for improvement. The focus on aesthetics might have compromised functionality.
-Created a compact cube design with rotating edges and touch-sensitive, color-changing panels. This received a quality score of 47.9. While the interactive elements improved the score, stability might be lacking.

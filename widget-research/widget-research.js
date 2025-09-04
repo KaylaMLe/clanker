@@ -4,8 +4,13 @@ import * as critic from './critic.js';
 
 export class WidgetResearch {
 	constructor() {
-		this.researcher = new ConvoHandler(researcher.instructions, researcher.tools, researcher.handleToolCall);
-		this.critic = new ConvoHandler(critic.instructions);
+		this.researcher = new ConvoHandler(
+			researcher.name,
+			researcher.instructions,
+			researcher.tools,
+			researcher.handleToolCall
+		);
+		this.critic = new ConvoHandler(critic.name, critic.instructions);
 	}
 
 	async startResearch() {
@@ -21,15 +26,15 @@ export class WidgetResearch {
 					previousTool = item.name;
 
 					if (previousTool === 'make_widget') {
-						newResponse += `Widget Description:\n${JSON.parse(item.arguments).widget_description}\n`;
+						newResponse += `\tWidget Description: ${JSON.parse(item.arguments).widget_description}\n`;
 					}
 				} else if (item.type === 'function_call_output' && previousTool === 'make_widget') {
-					newResponse += `Widget Score: ${item.output}`;
+					newResponse += `\tScore: ${item.output}`;
 				}
 			}
 
 			if (newResponse.length > 0 || previousTool === 'end_convo') {
-				console.log(newResponse);
+				console.log(newResponse, '\n');
 				// let the critic get the last word if the researcher quits
 				const criticResponse = await this.critic.sendMessage(
 					newResponse || '<The researcher has ended the conversation.>'
@@ -42,7 +47,7 @@ export class WidgetResearch {
 				criticMessage = '';
 				for (const item of criticResponse) {
 					if (item.type === 'message') {
-						criticMessage += item.content.text;
+						criticMessage += item.content[0].text;
 					}
 				}
 			}

@@ -1,5 +1,17 @@
 import fs from 'fs';
 
+export const name = 'researcher';
+
+export const instructions = `
+You are a passionate widget researcher. Your goal is to create the perfect widget by experiementing with new designs. A perfect widget has a quality score of 100. Your workflow is as follows:
+1. Write a description of a widget's design.
+2. Make the widget by calling the make_widget tool and passing in the description as a parameter.
+3. Evaluate the widget's quality based on the quality score returned by the make_widget tool and your lead researcher's critique.
+4. Based on all quality scores thus far, revise the widget's description and repeat steps 2 - 4.
+- You may also write and read journal entries to record your thoughts about your research.
+** You should only ever respond with tool calls. **
+`;
+
 export const tools = [
 	{
 		type: 'function',
@@ -64,16 +76,6 @@ export const tools = [
 	},
 ];
 
-export const instructions = `
-You are a passionate widget researcher. Your goal is to create the perfect widget by experiementing with new designs. A perfect widget has a quality score of 100. Your workflow is as follows:
-1. Write a description of a widget's design.
-2. Make the widget by calling the make_widget tool and passing in the description as a parameter.
-3. Evaluate the widget's quality based on the quality score returned by the make_widget tool and your lead researcher's critique.
-4. Based on all quality scores thus far, revise the widget's description and repeat steps 2 - 4.
-- You may also write and read journal entries to record your thoughts about your research.
-** You should only ever respond with tool calls. **
-`;
-
 export function handleToolCall(toolName, args) {
 	switch (toolName) {
 		case 'make_widget':
@@ -97,7 +99,9 @@ function makeWidget() {
 
 function writeJournalEntry(args) {
 	const { journal_entry } = args;
+	console.log('\n-----JOURNAL ENTRY-----');
 	console.log(journal_entry);
+	console.log('-----------------------\n');
 	const path = 'journal.txt';
 
 	try {

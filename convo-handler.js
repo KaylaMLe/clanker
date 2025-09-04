@@ -12,7 +12,8 @@ const client = new OpenAI({
 });
 
 export class ConvoHandler {
-	constructor(instructions, tools = [], toolCallHandler = null, model = 'gpt-4o') {
+	constructor(name = '', instructions = '', tools = [], toolCallHandler = null, model = 'gpt-4o') {
+		this.name = name;
 		this.instructions = instructions;
 		this.convoHistory = [];
 		this.tools = tools;
@@ -49,7 +50,7 @@ export class ConvoHandler {
 
 				this.convoHistory.push(toolOutput);
 			} else if (item.type === 'message') {
-				console.log(item.content.text);
+				console.log(`<${this.name}>: ${item.content[0].text}\n`);
 			} else {
 				throw new Error(
 					`Unhandled message of type ${item.type}${
