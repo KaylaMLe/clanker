@@ -33,14 +33,14 @@ export class WidgetResearch {
 				}
 			}
 
-			if (newResponse.length > 0 || previousTool === 'end_convo') {
+			if (newResponse.length > 0 || previousTool === 'quit') {
 				console.log(newResponse, '\n');
 				// let the critic get the last word if the researcher quits
 				const criticResponse = await this.critic.sendMessage(
 					newResponse || '<The researcher has ended the conversation.>'
 				);
 
-				if (previousTool === 'end_convo') {
+				if (previousTool === 'quit') {
 					break;
 				}
 

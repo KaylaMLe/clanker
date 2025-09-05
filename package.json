@@ -7,7 +7,7 @@
 	"type": "module",
 	"main": "tasks.js",
 	"scripts": {
-		"start": "node --env-file=.env tasks.js"
+		"start": "node --env-file=.env app.js"
 	},
 	"dependencies": {
 		"openai": "^5.16.0"
