@@ -1,4 +1,4 @@
-import { OpenAI } from 'openai';
+import { OpenAI, RateLimitError } from 'openai';
 
 // Check if API key is loaded
 if (!process.env.OPENAI_API_KEY) {
@@ -40,8 +40,13 @@ export class ConvoHandler {
 					});
 				responseOutput = output;
 			} catch (error) {
-				console.error('Error sending message. Waiting 1 second and retrying...\n', error);
-				setTimeout(async () => {}, 1000);
+				if (error instanceof RateLimitError) {
+					console.error('\n<Rate limit exceeded. Waiting 1 second and retrying...>\n');
+					setTimeout(async () => {}, 1000);
+				} else {
+					console.error('Error sending message:\n', error);
+					process.exit(1);
+				}
 			}
 		}
 
