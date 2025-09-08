@@ -28,23 +28,26 @@ export class WidgetResearch {
 					if (previousTool === 'make_widget') {
 						newResponse += `\tWidget Description: ${JSON.parse(item.arguments).widget_description}\n`;
 					}
-				} else if (item.type === 'function_call_output' && previousTool === 'make_widget') {
-					newResponse += `\tScore: ${item.output}`;
+				} else if (item.type === 'function_call_output') {
+					if (previousTool === 'make_widget') {
+						newResponse += `\tScore: ${item.output}`;
+					} else if (previousTool === 'quit') {
+						newResponse += item.output;
+					}
 				}
 			}
 
-			if (newResponse.length > 0 || previousTool === 'quit') {
+			if (newResponse.length > 0) {
 				console.log(newResponse, '\n');
 				// let the critic get the last word if the researcher quits
-				const criticResponse = await this.critic.sendMessage(
-					newResponse || '<The researcher has ended the conversation.>'
-				);
+				const criticResponse = await this.critic.sendMessage(newResponse);
 
 				if (previousTool === 'quit') {
 					break;
 				}
 
 				criticMessage = '';
+
 				for (const item of criticResponse) {
 					if (item.type === 'message') {
 						criticMessage += item.content[0].text;

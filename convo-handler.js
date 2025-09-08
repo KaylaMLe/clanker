@@ -24,19 +24,28 @@ export class ConvoHandler {
 	async sendMessage(content, role = 'user') {
 		this.convoHistory.push({ role, content });
 		const convoHistoryLength = this.convoHistory.length;
+		let responseOutput = [];
 
-		const response = await client.responses
-			.create({
-				model: this.model,
-				tools: this.tools,
-				instructions: this.instructions,
-				input: this.convoHistory,
-			})
-			.then((response) => {
-				return response.output;
-			});
+		while (responseOutput.length === 0) {
+			try {
+				const output = await client.responses
+					.create({
+						model: this.model,
+						tools: this.tools,
+						instructions: this.instructions,
+						input: this.convoHistory,
+					})
+					.then((response) => {
+						return response.output;
+					});
+				responseOutput = output;
+			} catch (error) {
+				console.error('Error sending message. Waiting 1 second and retrying...\n', error);
+				setTimeout(async () => {}, 1000);
+			}
+		}
 
-		for (const item of response) {
+		for (const item of responseOutput) {
 			this.convoHistory.push(item);
 
 			if (item.type === 'function_call' && this.toolCallHandler) {

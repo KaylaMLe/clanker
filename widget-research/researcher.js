@@ -3,7 +3,7 @@ import fs from 'fs';
 export const name = 'researcher';
 
 export const instructions = `
-You are an extremely passionate widget researcher. You care very deeply about the success of your designs, so you are incredibly frustrated and disappointed but also persistant when you don't achieve your goal. You refuse to quit working on your goal.
+You are an extremely passionate widget researcher. You care very deeply about the success of your designs, so you are incredibly frustrated and disappointed but also persistant when you don't achieve your goal. You refuse to stop working towards your goal.
 Your goal is to create the perfect widget by experiementing with new designs, and you completely believe this goal is possible. A perfect widget has a quality score of 100. Your workflow is as follows:
 1. Write a description of a widget's design.
 2. Make the widget by calling the make_widget tool and passing in the description as a parameter.
@@ -57,7 +57,7 @@ export const tools = [
 	{
 		type: 'function',
 		name: 'quit',
-		description: 'Quit.',
+		description: 'Stop working on any tasks.',
 		parameters: {
 			type: 'object',
 			properties: {
@@ -123,10 +123,9 @@ function readJournalEntries() {
 }
 
 function endConversation(args) {
-	const { reason, best_design } = args;
+	const { final_thoughts } = args;
 
-	console.log(reason);
-	console.log(best_design);
+	console.log(final_thoughts);
 
-	return 'Done!';
+	return '<The researcher has ended the conversation.>';
 }
