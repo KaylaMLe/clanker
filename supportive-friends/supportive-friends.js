@@ -14,39 +14,39 @@ export class SupportiveFriends {
 	}
 
 	async startConvo() {
-		let happyFriendMessage = 'Hi!';
+		let happyFriendMessage = '<Conversation with supportive-helper started.>';
 
 		for (let i = 0; i < 50; i++) {
 			const response = await this.unhappyFriend.sendMessage(happyFriendMessage);
-			let newResponse = '';
+			happyFriendMessage = '';
+			let unhappyFriendMessage = '';
 			let previousTool = null;
 
 			for (const item of response) {
 				if (item.type === 'function_call') {
 					previousTool = item.name;
-				} else if (item.type === 'function_call_output') {
-					newResponse += item.output;
-					console.log(newResponse, '\n');
 				} else if (item.type === 'message') {
-					newResponse += item.content[0].text;
+					unhappyFriendMessage += item.content[0].text;
+					console.log(`<${unhappyFriend.name}> ${unhappyFriendMessage}\n`);
 				}
 			}
 
-			if (newResponse.length > 0) {
-				const happyFriendResponse = await this.happyFriend.sendMessage(newResponse);
+			if (previousTool === 'end_conversation') {
+				break;
+			}
 
-				if (previousTool === 'end_conversation') {
-					break;
-				}
-
-				happyFriendMessage = '';
+			if (unhappyFriendMessage.length > 0) {
+				const happyFriendResponse = await this.happyFriend.sendMessage(unhappyFriendMessage);
 
 				for (const item of happyFriendResponse) {
 					if (item.type === 'message') {
 						happyFriendMessage += item.content[0].text;
+						console.log(`<${happyFriend.name}> ${happyFriendMessage}\n`);
 					}
 				}
 			}
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
 		}
 	}
 }
