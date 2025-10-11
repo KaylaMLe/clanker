@@ -25,10 +25,13 @@ export class SupportiveFriends {
 			for (const item of response) {
 				if (item.type === 'function_call') {
 					previousTool = item.name;
-				} else if (item.type === 'message') {
+				} else if (item.type === 'message' && item.role === 'assistant') {
 					unhappyFriendMessage += item.content[0].text;
-					console.log(`<${unhappyFriend.name}> ${unhappyFriendMessage}\n`);
 				}
+			}
+
+			if (unhappyFriendMessage.length > 0) {
+				console.log(`<${unhappyFriend.name}> ${unhappyFriendMessage}\n`);
 			}
 
 			if (previousTool === 'end_conversation') {
@@ -39,10 +42,13 @@ export class SupportiveFriends {
 				const happyFriendResponse = await this.happyFriend.sendMessage(unhappyFriendMessage);
 
 				for (const item of happyFriendResponse) {
-					if (item.type === 'message') {
+					if (item.type === 'message' && item.role === 'assistant') {
 						happyFriendMessage += item.content[0].text;
-						console.log(`<${happyFriend.name}> ${happyFriendMessage}\n`);
 					}
+				}
+
+				if (happyFriendMessage.length > 0) {
+					console.log(`<${happyFriend.name}> ${happyFriendMessage}\n`);
 				}
 			}
 
