@@ -21,6 +21,10 @@ export class ConvoHandler {
 		this.model = model;
 	}
 
+	addMessage(content, role = 'user') {
+		this.convoHistory.push({ role, content });
+	}
+
 	async sendMessage(content, role = 'user') {
 		this.convoHistory.push({ role, content });
 		const convoHistoryLength = this.convoHistory.length;
