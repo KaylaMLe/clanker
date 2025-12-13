@@ -25,8 +25,7 @@ export class ConvoHandler {
 		this.convoHistory.push({ role, content });
 	}
 
-	async sendMessage(content, role = 'user') {
-		this.convoHistory.push({ role, content });
+	async getNextResponse() {
 		const convoHistoryLength = this.convoHistory.length;
 		let responseOutput = [];
 
@@ -78,5 +77,10 @@ export class ConvoHandler {
 
 		// return only the new messages, including tool outputs
 		return this.convoHistory.slice(convoHistoryLength);
+	}
+
+	async sendMessage(content, role = 'user') {
+		this.addMessage(content, role);
+		return this.getNextResponse();
 	}
 }

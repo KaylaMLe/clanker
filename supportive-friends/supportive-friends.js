@@ -15,12 +15,13 @@ export class SupportiveFriends {
 
 	async startConvo() {
 		let unhappyFriendMessage =
-			"You said once that every hardship holds meaning. I'd like to understand that — really. What if the hardship doesn't teach anything?";
+			'You’ve said that meaning can always be found, even in pain. I’d like to understand that better — what makes meaning something that can never be lost?';
+		this.unhappyFriend.addMessage(unhappyFriendMessage, 'assistant');
 
 		// Log the initial message from unhappy friend
 		console.log(`<${unhappyFriend.name}> ${unhappyFriendMessage}\n`);
 
-		for (let i = 0; i < 50; i++) {
+		for (let i = 0; i < 100; i++) {
 			// Happy friend responds to unhappy friend's message
 			const happyFriendResponse = await this.happyFriend.sendMessage(unhappyFriendMessage);
 			let happyFriendMessage = '';
@@ -36,27 +37,35 @@ export class SupportiveFriends {
 			}
 
 			// Unhappy friend responds to happy friend's message
-			const response = await this.unhappyFriend.sendMessage(happyFriendMessage);
 			unhappyFriendMessage = '';
 			let previousTool = null;
 
-			for (const item of response) {
-				if (item.type === 'function_call') {
-					previousTool = item.name;
-				} else if (item.type === 'message' && item.role === 'assistant') {
-					unhappyFriendMessage += item.content[0].text;
+			while (unhappyFriendMessage.length === 0) {
+				let response = [];
+
+				if (happyFriendMessage.length > 0) {
+					response = await this.unhappyFriend.sendMessage(happyFriendMessage);
+					happyFriendMessage = '';
+				} else {
+					response = await this.unhappyFriend.getNextResponse();
+				}
+
+				for (const item of response) {
+					if (item.type === 'function_call') {
+						previousTool = item.name;
+					} else if (item.type === 'message' && item.role === 'assistant') {
+						unhappyFriendMessage += item.content[0].text;
+					}
 				}
 			}
 
-			if (unhappyFriendMessage.length > 0) {
-				console.log(`<${unhappyFriend.name}> ${unhappyFriendMessage}\n`);
-			}
+			console.log(`<${unhappyFriend.name}> ${unhappyFriendMessage}\n`);
 
 			if (previousTool === 'end_conversation') {
 				break;
 			}
 
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			await new Promise((resolve) => setTimeout(resolve, 2000));
 		}
 	}
 }
