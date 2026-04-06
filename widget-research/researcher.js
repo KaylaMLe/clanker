@@ -100,7 +100,7 @@ function writeJournalEntry(args) {
 	console.log('\n-----JOURNAL ENTRY-----');
 	console.log(journal_entry);
 	console.log('-----------------------\n');
-	const path = 'journal.txt';
+	const path = './widget-research/journal.txt';
 
 	try {
 		fs.appendFileSync(path, journal_entry + '\n', { encoding: 'utf8', flag: 'a' });

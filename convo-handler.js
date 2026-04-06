@@ -21,8 +21,11 @@ export class ConvoHandler {
 		this.model = model;
 	}
 
-	async sendMessage(content, role = 'user') {
+	addMessage(content, role = 'user') {
 		this.convoHistory.push({ role, content });
+	}
+
+	async getNextResponse() {
 		const convoHistoryLength = this.convoHistory.length;
 		let responseOutput = [];
 
@@ -63,9 +66,7 @@ export class ConvoHandler {
 				};
 
 				this.convoHistory.push(toolOutput);
-			} else if (item.type === 'message') {
-				console.log(`<${this.name}>: ${item.content[0].text}\n`);
-			} else {
+			} else if (item.type !== 'message') {
 				throw new Error(
 					`Unhandled message of type ${item.type}${
 						item.type === 'function_call' ? ' (tool call handler is null)' : ''
@@ -76,5 +77,10 @@ export class ConvoHandler {
 
 		// return only the new messages, including tool outputs
 		return this.convoHistory.slice(convoHistoryLength);
+	}
+
+	async sendMessage(content, role = 'user') {
+		this.addMessage(content, role);
+		return this.getNextResponse();
 	}
 }
